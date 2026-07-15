@@ -16,5 +16,27 @@ if (navToggle && siteNav) {
   });
 }
 
-const currentYear = new Date().getFullYear();
-document.documentElement.dataset.year = String(currentYear);
+const gameTabs = document.querySelectorAll('[data-game-tab]');
+const gamePanels = document.querySelectorAll('[data-game-panel]');
+
+function activateGame(name) {
+  gameTabs.forEach((button) => {
+    const active = button.dataset.gameTab === name;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-selected', String(active));
+  });
+
+  gamePanels.forEach((panel) => {
+    panel.classList.toggle('is-active', panel.dataset.gamePanel === name);
+  });
+
+  window.dispatchEvent(new CustomEvent('portfolio:game-change', { detail: { game: name } }));
+}
+
+if (gameTabs.length && gamePanels.length) {
+  gameTabs.forEach((button) => {
+    button.addEventListener('click', () => activateGame(button.dataset.gameTab));
+  });
+}
+
+document.documentElement.dataset.year = String(new Date().getFullYear());

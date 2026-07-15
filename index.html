@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Dark minimalist personal portfolio with a Games section scaffold.">
+  <meta name="description" content="Light minimalist personal portfolio with Snake and Plane games.">
   <title>keepgoing_0325 | Portfolio</title>
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" defer></script>
+  <script src="game.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -28,7 +29,10 @@
       <a href="#home">Home</a>
       <a href="#about">About</a>
       <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#research">Research</a>
       <a href="#hobbies">Hobbies</a>
+      <a href="#contact">Contact</a>
       <a href="#games">Games</a>
     </nav>
   </header>
@@ -37,13 +41,13 @@
     <section class="hero section" id="home">
       <div class="hero-copy">
         <p class="eyebrow">Personal website scaffold</p>
-        <h1>메트릭스 느낌의 다크 포트폴리오를 위한 첫 골격</h1>
+        <h1>프로필과 게임을 함께 보여주는 정적 포트폴리오</h1>
         <p class="hero-text">
-          기존 콘텐츠는 보존하고, 상단 내비게이션과 섹션 구조, Games 영역 준비만 먼저 끝낸 상태입니다.
+          keepgoing_0325의 프로필, 러닝과 헬스 라이프스타일, 그리고 Snake와 Plane 게임을 한 화면 흐름으로 정리했습니다.
         </p>
         <div class="hero-actions">
           <a class="button button-primary" href="#games">Games 보기</a>
-          <a class="button button-secondary" href="#about">프로필 보기</a>
+          <a class="button button-secondary" href="CV.pdf" target="_blank" rel="noopener">CV 보기</a>
         </div>
       </div>
 
@@ -56,11 +60,11 @@
           </div>
           <div>
             <dt>Theme</dt>
-            <dd>Dark</dd>
+            <dd>Light</dd>
           </div>
           <div>
             <dt>Game</dt>
-            <dd>Placeholder</dd>
+            <dd>Snake + Plane</dd>
           </div>
         </dl>
       </aside>
@@ -74,15 +78,15 @@
       <div class="card-grid three-up">
         <article class="card">
           <h3>현재 방향</h3>
-          <p>프로페셔널 웹사이트 + Games 섹션을 함께 보여주는 구조로 시작합니다.</p>
+          <p>정적 HTML/CSS/JS 기반 개인 웹사이트와 게임 영역을 함께 구성합니다.</p>
         </article>
         <article class="card">
           <h3>디자인</h3>
-          <p>다크 테마, 녹색 포인트, 단정한 카드 레이아웃으로 Thread의 여백감을 참고합니다.</p>
+          <p>여백 중심의 카드 레이아웃과 녹색 포인트로 Thread 느낌의 가벼운 톤을 유지합니다.</p>
         </article>
         <article class="card">
           <h3>프로필 자료</h3>
-          <p>CV.pdf 기반 내용은 다음 루프에서 실제 섹션 문구로 반영합니다.</p>
+          <p>CV.pdf의 내용을 바탕으로 다음 루프에서 더 구체적인 문구를 채워 넣습니다.</p>
         </article>
       </div>
     </section>
@@ -90,22 +94,60 @@
     <section class="section" id="experience">
       <div class="section-head">
         <p class="eyebrow">Experience</p>
-        <h2>경력 섹션 준비</h2>
+        <h2>경력 섹션</h2>
       </div>
       <div class="timeline">
         <article class="timeline-item">
           <span class="timeline-dot"></span>
           <div>
-            <h3>경력 카드 1</h3>
-            <p>세부 내용은 다음 루프에서 CV.pdf 기준으로 채웁니다.</p>
+            <h3>삼성전자 SW Call 개발자 주검증 6년</h3>
+            <p>검증과 안정성 중심의 업무 경험을 정리하는 자리입니다.</p>
           </div>
         </article>
         <article class="timeline-item">
           <span class="timeline-dot"></span>
           <div>
-            <h3>경력 카드 2</h3>
-            <p>현재는 레이아웃과 간격만 먼저 확보합니다.</p>
+            <h3>개인 프로필 운영</h3>
+            <p>운동 기록과 러닝 성과를 균형 있게 보여주는 개인 브랜딩을 반영합니다.</p>
           </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="section-head">
+        <p class="eyebrow">Projects</p>
+        <h2>확인 가능한 프로젝트</h2>
+      </div>
+      <div class="card-grid two-up">
+        <article class="card">
+          <h3>웹사이트 스캐폴드</h3>
+          <p>반응형 내비게이션, 프로필 섹션, 게임 메뉴, 배포 흐름을 포함한 정적 사이트입니다.</p>
+        </article>
+        <article class="card">
+          <h3>게임 모듈</h3>
+          <p>Snake와 Plane을 분리된 카드로 구성하고, 공통 상태 관리와 키보드/모바일 입력을 적용합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="research">
+      <div class="section-head">
+        <p class="eyebrow">Research</p>
+        <h2>검증과 실험</h2>
+      </div>
+      <div class="card-grid three-up">
+        <article class="card">
+          <h3>반응형 검증</h3>
+          <p>375px, 768px, 1440px에서 섹션 흐름과 내비게이션이 무너지지 않도록 점검합니다.</p>
+        </article>
+        <article class="card">
+          <h3>상태 머신</h3>
+          <p>게임 시작, 일시정지, 재시작, 게임오버, 스킬 발동을 명확한 상태로 구분합니다.</p>
+        </article>
+        <article class="card">
+          <h3>배포 호환성</h3>
+          <p>상대 경로와 정적 파일만 사용해 GitHub Pages에서 바로 열리도록 유지합니다.</p>
         </article>
       </div>
     </section>
@@ -113,16 +155,37 @@
     <section class="section" id="hobbies">
       <div class="section-head">
         <p class="eyebrow">Hobbies</p>
-        <h2>라이프스타일 섹션 준비</h2>
+        <h2>라이프스타일</h2>
       </div>
       <div class="card-grid two-up">
         <article class="card">
           <h3>러닝</h3>
-          <p>러닝 기록과 개인 목표를 담을 카드 영역을 먼저 확보합니다.</p>
+          <p>마라톤 1년차, 하프 1:39:00, 10K 00:44:00 기록을 바탕으로 러닝 루틴을 기록합니다.</p>
         </article>
         <article class="card">
           <h3>헬스</h3>
-          <p>운동 루틴과 회복 중심의 라이프스타일 요약을 배치할 자리입니다.</p>
+          <p>5년차 주 5회 루틴을 유지하며 저중량 중심으로 안정적으로 운동합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="section-head">
+        <p class="eyebrow">Contact</p>
+        <h2>연락과 링크</h2>
+      </div>
+      <div class="card-grid three-up">
+        <article class="card">
+          <h3>GitHub Pages</h3>
+          <p>https://J-seockyong.github.io</p>
+        </article>
+        <article class="card">
+          <h3>GitHub 저장소</h3>
+          <p>https://github.com/J-seockyong/J-seockyong.github.io.git</p>
+        </article>
+        <article class="card">
+          <h3>프로필 문서</h3>
+          <p><a href="CV.pdf" target="_blank" rel="noopener">CV.pdf 열기</a></p>
         </article>
       </div>
     </section>
@@ -130,25 +193,114 @@
     <section class="section" id="games">
       <div class="section-head">
         <p class="eyebrow">Games</p>
-        <h2>게임 영역 준비</h2>
+        <h2>Snake와 Plane 게임</h2>
       </div>
-      <div class="game-shell card">
-        <div class="game-stage">
-          <div class="game-grid"></div>
-          <div class="game-placeholder">
-            <p class="game-label">Snake scaffold</p>
-            <h3>게임 본체는 다음 루프에서 추가</h3>
-            <p>현재 루프에서는 메뉴 연결, 영역 배치, 반응형 틀만 준비합니다.</p>
+
+      <div class="game-tabs" role="tablist" aria-label="게임 선택">
+        <button class="game-tab is-active" type="button" data-game-tab="snake" role="tab" aria-selected="true">Snake</button>
+        <button class="game-tab" type="button" data-game-tab="plane" role="tab" aria-selected="false">Plane</button>
+      </div>
+
+      <div class="game-panels">
+        <article class="game-panel is-active card" data-game-panel="snake" aria-label="Snake game">
+          <div class="game-header">
+            <div>
+              <p class="eyebrow">Snake</p>
+              <h3>방향키와 WASD로 이동하는 지렁이 게임</h3>
+            </div>
+            <div class="game-stats">
+              <span>Score: <strong data-snake-score>0</strong></span>
+              <span>Best: <strong data-snake-best>0</strong></span>
+              <span>Status: <strong data-snake-status>대기</strong></span>
+            </div>
           </div>
-        </div>
-        <div class="game-toolbar">
-          <span class="pill">Keyboard</span>
-          <span class="pill">Touch</span>
-          <span class="pill">Pause</span>
-          <span class="pill">Ranking</span>
-        </div>
+
+          <div class="canvas-shell">
+            <canvas class="game-canvas" data-snake-canvas width="600" height="600" aria-label="Snake game board"></canvas>
+          </div>
+
+          <div class="game-note">
+            음식, 랜덤 아이템, 랜덤 이동 적, 일시정지, 재시작, 최고 점수를 지원합니다.
+          </div>
+
+          <div class="game-actions">
+            <button class="button button-primary" type="button" data-snake-action="start">Start</button>
+            <button class="button button-secondary" type="button" data-snake-action="pause">Pause</button>
+            <button class="button button-secondary" type="button" data-snake-action="restart">Restart</button>
+          </div>
+
+          <div class="touch-pad" aria-label="Snake mobile controls">
+            <button type="button" data-snake-dir="up">Up</button>
+            <div class="touch-pad-row">
+              <button type="button" data-snake-dir="left">Left</button>
+              <button type="button" data-snake-dir="down">Down</button>
+              <button type="button" data-snake-dir="right">Right</button>
+            </div>
+          </div>
+
+          <div class="legend">
+            <span class="legend-item"><i class="legend-dot food"></i>Food</span>
+            <span class="legend-item"><i class="legend-dot item"></i>Item</span>
+            <span class="legend-item"><i class="legend-dot enemy"></i>Enemy</span>
+          </div>
+        </article>
+
+        <article class="game-panel card" data-game-panel="plane" aria-label="Plane game">
+          <div class="game-header">
+            <div>
+              <p class="eyebrow">Plane</p>
+              <h3>우주 공간에서 미사일을 피하는 전투기 게임</h3>
+            </div>
+            <div class="game-stats">
+              <span>Score: <strong data-plane-score>0</strong></span>
+              <span>Best: <strong data-plane-best>0</strong></span>
+              <span>Status: <strong data-plane-status>대기</strong></span>
+            </div>
+          </div>
+
+          <div class="canvas-shell">
+            <canvas class="game-canvas" data-plane-canvas width="840" height="500" aria-label="Plane game board"></canvas>
+          </div>
+
+          <div class="gauge-row">
+            <span class="gauge-label">Skill</span>
+            <div class="gauge-track" aria-label="Skill gauge">
+              <div class="gauge-fill" data-plane-gauge></div>
+            </div>
+            <button class="button button-primary" type="button" data-plane-action="skill" disabled>Skill</button>
+          </div>
+
+          <div class="game-note">
+            미사일을 피하고, 랜덤 아이템을 먹고, 게이지가 차면 방어 스킬을 사용할 수 있습니다.
+          </div>
+
+          <div class="game-actions">
+            <button class="button button-primary" type="button" data-plane-action="start">Start</button>
+            <button class="button button-secondary" type="button" data-plane-action="pause">Pause</button>
+            <button class="button button-secondary" type="button" data-plane-action="restart">Restart</button>
+          </div>
+
+          <div class="touch-pad" aria-label="Plane mobile controls">
+            <button type="button" data-plane-dir="up">Up</button>
+            <div class="touch-pad-row">
+              <button type="button" data-plane-dir="left">Left</button>
+              <button type="button" data-plane-dir="down">Down</button>
+              <button type="button" data-plane-dir="right">Right</button>
+            </div>
+          </div>
+
+          <div class="legend">
+            <span class="legend-item"><i class="legend-dot missile"></i>Missile</span>
+            <span class="legend-item"><i class="legend-dot power"></i>Item</span>
+            <span class="legend-item"><i class="legend-dot shield"></i>Shield</span>
+          </div>
+        </article>
       </div>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <p>keepgoing_0325 · Static portfolio and games</p>
+  </footer>
 </body>
 </html>
