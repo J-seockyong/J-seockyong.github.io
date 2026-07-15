@@ -39,4 +39,7 @@ if (gameTabs.length && gamePanels.length) {
   });
 }
 
-document.documentElement.dataset.year = String(new Date().getFullYear());
+const yearEl = document.querySelector('#year');
+if (yearEl) {
+  yearEl.textContent = String(new Date().getFullYear());
+}

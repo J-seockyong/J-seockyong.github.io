@@ -23,7 +23,7 @@
       try {
         localStorage.setItem(key, String(value));
       } catch {
-        // ignore storage failures
+        // Ignore storage failures in private mode.
       }
     },
   };
@@ -31,16 +31,16 @@
   class SnakeGame {
     constructor(panel) {
       this.panel = panel;
+      this.panel.tabIndex = 0;
       this.canvas = panel.querySelector('[data-snake-canvas]');
       this.ctx = this.canvas.getContext('2d');
       this.scoreEl = panel.querySelector('[data-snake-score]');
       this.bestEl = panel.querySelector('[data-snake-best]');
       this.statusEl = panel.querySelector('[data-snake-status]');
       this.controls = panel.querySelectorAll('[data-snake-action], [data-snake-dir]');
-      this.panelVisible = panel.classList.contains('is-active');
+      this.panelVisible = true;
       this.timer = null;
       this.speed = 140;
-      this.rafResize = null;
       this.reset(true);
       this.bind();
       this.resize();
@@ -68,14 +68,10 @@
       });
     }
 
-    setVisible(isVisible) {
-      this.panelVisible = isVisible;
-      if (!isVisible) {
-        this.pause();
-      } else {
-        this.resize();
-        this.render();
-      }
+    setVisible() {
+      this.panelVisible = true;
+      this.resize();
+      this.render();
     }
 
     resize() {
@@ -100,10 +96,11 @@
         { x: 6, y: 10 },
       ];
       this.food = this.spawnCell();
-      this.enemy = this.spawnCell();
+      this.enemy = this.spawnEnemy();
+      this.enemyExplosion = null;
       this.item = null;
-      this.itemLife = 0;
       this.shield = 0;
+      this.growthPending = 0;
       this.pendingEffect = '대기';
       this.status = initial ? '대기' : '재시작';
       this.speed = 140;
@@ -123,8 +120,17 @@
     isOccupied(cell) {
       return this.snake.some((segment) => sameCell(segment, cell)) ||
         sameCell(this.food, cell) ||
-        sameCell(this.enemy, cell) ||
-        sameCell(this.item?.cell, cell);
+        sameCell(this.enemy?.cell, cell) ||
+        sameCell(this.item?.cell, cell) ||
+        sameCell(this.enemyExplosion?.cell, cell);
+    }
+
+    spawnEnemy() {
+      return {
+        cell: this.spawnCell(),
+        life: 5,
+        size: randInt(2, 6),
+      };
     }
 
     setDirection(name) {
@@ -212,14 +218,18 @@
       this.render();
     }
 
+    growSnake(amount = 1) {
+      this.growthPending += amount;
+    }
+
     applyItem(type) {
       const effects = {
-        speed: () => {
+        speedUp: () => {
           this.speed = Math.max(70, this.speed - 18);
           this.pendingEffect = '속도 증가';
           this.restartTimer();
         },
-        slow: () => {
+        slowDown: () => {
           this.speed = Math.min(220, this.speed + 18);
           this.pendingEffect = '속도 감소';
           this.restartTimer();
@@ -227,6 +237,18 @@
         shield: () => {
           this.shield += 1;
           this.pendingEffect = '실드 +1';
+        },
+        growth: () => {
+          this.growSnake(2);
+          this.score += 10;
+          this.pendingEffect = '몸집 증가';
+        },
+        shrink: () => {
+          if (this.snake.length > 3) {
+            this.snake.pop();
+          }
+          this.score = Math.max(0, this.score - 10);
+          this.pendingEffect = '몸집 감소';
         },
         bonus: () => {
           this.score += 25;
@@ -238,6 +260,7 @@
     }
 
     moveEnemy() {
+      if (!this.enemy) return;
       const moves = [
         { x: 1, y: 0 },
         { x: -1, y: 0 },
@@ -246,21 +269,31 @@
       ];
       const move = choice(moves);
       const next = {
-        x: clamp(this.enemy.x + move.x, 0, this.cols - 1),
-        y: clamp(this.enemy.y + move.y, 0, this.rows - 1),
+        x: clamp(this.enemy.cell.x + move.x, 0, this.cols - 1),
+        y: clamp(this.enemy.cell.y + move.y, 0, this.rows - 1),
       };
       if (!sameCell(next, this.food) && !this.snake.some((segment) => sameCell(segment, next))) {
-        this.enemy = next;
+        this.enemy.cell = next;
       }
     }
 
     spawnRandomItem() {
-      const types = ['speed', 'slow', 'shield', 'bonus'];
+      const types = ['speedUp', 'slowDown', 'shield', 'growth', 'shrink', 'bonus'];
       this.item = {
         cell: this.spawnCell(),
         type: choice(types),
         life: 18,
       };
+    }
+
+    explodeEnemy() {
+      if (!this.enemy) return;
+      this.enemyExplosion = {
+        cell: { ...this.enemy.cell },
+        life: 0.9,
+      };
+      this.pendingEffect = '적 폭발';
+      this.enemy = this.spawnEnemy();
     }
 
     step() {
@@ -273,9 +306,14 @@
 
       const wallHit = nextHead.x < 0 || nextHead.x >= this.cols || nextHead.y < 0 || nextHead.y >= this.rows;
       const selfHit = this.snake.some((segment) => sameCell(segment, nextHead));
-      const enemyHit = sameCell(this.enemy, nextHead);
+      const enemyHit = sameCell(this.enemy?.cell, nextHead);
       if (wallHit || selfHit || enemyHit) {
-        if (this.shield > 0) {
+        if (enemyHit && this.snake.length >= (this.enemy?.size || 0) + 1) {
+          this.score += 20 + (this.enemy?.size || 0) * 5;
+          this.growSnake(Math.max(1, Math.floor((this.enemy?.size || 1) / 2)));
+          this.pendingEffect = '적 포식';
+          this.explodeEnemy();
+        } else if (this.shield > 0) {
           this.shield -= 1;
           this.pendingEffect = '실드 사용';
         } else {
@@ -289,6 +327,8 @@
       if (sameCell(nextHead, this.food)) {
         this.score += 10;
         this.food = this.spawnCell();
+      } else if (this.growthPending > 0) {
+        this.growthPending -= 1;
       } else {
         this.snake.pop();
       }
@@ -298,16 +338,23 @@
         this.item = null;
       }
 
-      if (this.item) {
-        this.item.life -= 1;
-        if (this.item.life <= 0) {
-          this.item = null;
-        }
-      }
-
       this.enemyTicker += 1;
       if (this.enemyTicker % 2 === 0) {
         this.moveEnemy();
+      }
+
+      if (this.enemy) {
+        this.enemy.life -= this.speed / 1000;
+        if (this.enemy.life <= 0) {
+          this.explodeEnemy();
+        }
+      }
+
+      if (this.enemyExplosion) {
+        this.enemyExplosion.life -= this.speed / 1000;
+        if (this.enemyExplosion.life <= 0) {
+          this.enemyExplosion = null;
+        }
       }
 
       if (!this.item) {
@@ -315,15 +362,6 @@
         if (this.itemSpawnTicker >= 7) {
           this.spawnRandomItem();
           this.itemSpawnTicker = 0;
-        }
-      }
-
-      if (sameCell(this.enemy, nextHead)) {
-        if (this.shield > 0) {
-          this.shield -= 1;
-        } else {
-          this.gameOver('적 충돌');
-          return;
         }
       }
 
@@ -336,7 +374,11 @@
     updateScore() {
       this.scoreEl.textContent = String(this.score);
       this.bestEl.textContent = String(this.best);
-      this.statusEl.textContent = `${this.status}${this.shield > 0 ? ' · 실드 ' + this.shield : ''}`;
+      const extras = [];
+      if (this.shield > 0) extras.push(`실드 ${this.shield}`);
+      if (this.growthPending > 0) extras.push(`성장 +${this.growthPending}`);
+      if (this.pendingEffect) extras.push(this.pendingEffect);
+      this.statusEl.textContent = `${this.status}${extras.length ? ` · ${extras.join(' · ')}` : ''}`;
     }
 
     updateHud() {
@@ -359,10 +401,10 @@
       const ctx = this.ctx;
       const { width, height } = this.canvas;
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = '#f7fbf7';
+      ctx.fillStyle = '#fffdfb';
       ctx.fillRect(0, 0, width, height);
 
-      ctx.fillStyle = '#e4f1e7';
+      ctx.fillStyle = '#f2eae5';
       for (let i = 0; i < this.cols; i += 1) {
         for (let j = 0; j < this.rows; j += 1) {
           if ((i + j) % 2 === 0) {
@@ -372,10 +414,10 @@
       }
 
       const drawCell = (cell, fill, inset = 0.12) => {
+        if (!cell) return;
         const padding = this.cellSize * inset;
         ctx.fillStyle = fill;
-        ctx.beginPath();
-        ctx.roundRect(
+        this.drawRoundedRect(
           cell.x * this.cellSize + padding,
           cell.y * this.cellSize + padding,
           this.cellSize - padding * 2,
@@ -385,14 +427,32 @@
         ctx.fill();
       };
 
-      drawCell(this.food, '#f4b53d', 0.2);
+      drawCell(this.food, '#f0b23a', 0.2);
       if (this.item) {
-        drawCell(this.item.cell, '#7d61ff', 0.18);
+        const itemFill =
+          this.item.type === 'speedUp' ? '#f0a44d' :
+          this.item.type === 'slowDown' ? '#5d73ff' :
+          this.item.type === 'shield' ? '#31c6d7' :
+          this.item.type === 'growth' ? '#0e8f49' :
+          this.item.type === 'shrink' ? '#ef5f7a' : '#7d61ff';
+        drawCell(this.item.cell, itemFill, 0.18);
       }
-      drawCell(this.enemy, '#ef5f7a', 0.16);
+      if (this.enemyExplosion) {
+        const boom = this.enemyExplosion.cell;
+        ctx.fillStyle = 'rgba(239, 95, 122, 0.14)';
+        ctx.beginPath();
+        ctx.arc(
+          boom.x * this.cellSize + this.cellSize / 2,
+          boom.y * this.cellSize + this.cellSize / 2,
+          this.cellSize * (0.85 + (1 - this.enemyExplosion.life)),
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
+      drawCell(this.enemy?.cell, '#ef5f7a', 0.16);
 
       this.snake.forEach((segment, index) => {
-        const alpha = 1 - index / Math.max(1, this.snake.length + 2);
         drawCell(segment, `rgba(14, 143, 73, ${0.95 - index * 0.05})`, 0.12);
         if (index === 0) {
           ctx.fillStyle = '#ffffff';
@@ -407,15 +467,13 @@
           ctx.fill();
         }
       });
-
-      ctx.fillStyle = 'rgba(14, 143, 73, 0.05)';
-      ctx.fillRect(0, 0, width, height);
     }
   }
 
   class PlaneGame {
     constructor(panel) {
       this.panel = panel;
+      this.panel.tabIndex = 0;
       this.canvas = panel.querySelector('[data-plane-canvas]');
       this.ctx = this.canvas.getContext('2d');
       this.scoreEl = panel.querySelector('[data-plane-score]');
@@ -424,7 +482,7 @@
       this.gaugeEl = panel.querySelector('[data-plane-gauge]');
       this.skillButton = panel.querySelector('[data-plane-action="skill"]');
       this.controls = panel.querySelectorAll('[data-plane-action], [data-plane-dir]');
-      this.panelVisible = panel.classList.contains('is-active');
+      this.panelVisible = true;
       this.running = false;
       this.rafId = 0;
       this.keys = new Set();
@@ -461,14 +519,10 @@
       });
     }
 
-    setVisible(isVisible) {
-      this.panelVisible = isVisible;
-      if (!isVisible) {
-        this.pause();
-      } else {
-        this.resize();
-        this.render();
-      }
+    setVisible() {
+      this.panelVisible = true;
+      this.resize();
+      this.render();
     }
 
     resize() {
@@ -737,8 +791,7 @@
       this.items = this.items.filter((item) => {
         item.life -= dt;
         if (item.life <= 0) return false;
-        const circleHit = this.rectCircleHit(this.fighter, item);
-        if (circleHit) {
+        if (this.rectCircleHit(this.fighter, item)) {
           this.applyItem(item.type);
           return false;
         }
@@ -830,8 +883,8 @@
       }
 
       const glow = ctx.createLinearGradient(x, y, x + w, y + h);
-      glow.addColorStop(0, '#0e8f49');
-      glow.addColorStop(1, '#c7f6d9');
+      glow.addColorStop(0, '#111111');
+      glow.addColorStop(1, '#d7d7d7');
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.moveTo(x, y + h / 2);
@@ -860,10 +913,10 @@
       if (!this.running && this.score === 0) {
         const ctx = this.ctx;
         ctx.fillStyle = 'rgba(16, 22, 20, 0.7)';
-        ctx.font = '600 18px Inter, sans-serif';
+        ctx.font = '600 18px "Noto Sans KR", sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('전투기를 움직여 미사일을 피하세요', this.canvas.width / 2, this.canvas.height / 2 - 12);
-        ctx.font = '500 13px Inter, sans-serif';
+        ctx.font = '500 13px "Noto Sans KR", sans-serif';
         ctx.fillText('방향키 / WASD / 모바일 버튼 지원', this.canvas.width / 2, this.canvas.height / 2 + 14);
       }
     }
@@ -873,6 +926,7 @@
     const snakePanel = document.querySelector('[data-game-panel="snake"]');
     const planePanel = document.querySelector('[data-game-panel="plane"]');
     if (!snakePanel || !planePanel) return;
+
     const snakeGame = new SnakeGame(snakePanel);
     const planeGame = new PlaneGame(planePanel);
 
@@ -887,7 +941,7 @@
     });
 
     snakeGame.setVisible(true);
-    planeGame.setVisible(false);
+    planeGame.setVisible(true);
 
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
