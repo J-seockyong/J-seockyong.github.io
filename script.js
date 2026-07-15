@@ -39,6 +39,22 @@ if (gameTabs.length && gamePanels.length) {
   });
 }
 
+const revealTargets = document.querySelectorAll('.section');
+if ('IntersectionObserver' in window && revealTargets.length) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      entry.target.classList.toggle('is-visible', entry.isIntersecting);
+    });
+  }, {
+    threshold: 0.2,
+    rootMargin: '0px 0px -12% 0px',
+  });
+
+  revealTargets.forEach((target) => observer.observe(target));
+} else {
+  revealTargets.forEach((target) => target.classList.add('is-visible'));
+}
+
 const yearEl = document.querySelector('#year');
 if (yearEl) {
   yearEl.textContent = String(new Date().getFullYear());

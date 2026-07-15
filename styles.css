@@ -160,6 +160,51 @@ button, input, textarea, select { font: inherit; }
 }
 
 .section { padding: 44px 0; }
+.section,
+.hero-copy,
+.hero-panel,
+.card,
+.timeline-item,
+.game-panel {
+  transition:
+    opacity 420ms ease,
+    transform 520ms ease,
+    filter 420ms ease,
+    box-shadow 320ms ease,
+    border-color 320ms ease;
+}
+
+.section {
+  opacity: 0.14;
+  transform: translateY(18px);
+  filter: blur(1px);
+}
+
+.section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.section.is-visible .hero-copy,
+.section.is-visible .hero-panel,
+.section.is-visible .card,
+.section.is-visible .timeline-item,
+.section.is-visible .game-panel {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.hero-copy,
+.hero-panel,
+.card,
+.timeline-item,
+.game-panel {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(1px);
+}
 
 .hero {
   display: grid;
